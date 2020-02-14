@@ -87,6 +87,12 @@
 
 (define-judgment-form
   PolyGν
+  #:mode (lookup I O)
+  #:contract (lookup (F ...) F)
+  [(lookup (_ ... F _ ...) F)])
+
+(define-judgment-form
+  PolyGν
   #:mode (⊢ I I O O)
   #:contract (⊢ Γ M A Γ)
 
@@ -95,13 +101,23 @@
     --------------------- Asc
     (⊢ Γ (:: M B) B Γ_0)]
 
-  [
+  [ (lookup Γ (: x A))
    --------------------- Var
-   (⊢ (_ ... (: x A) _ ...) x A ())]
+   (⊢ Γ x A ())]
 
   [ (⊢ (F ...) M A (F_1 ...))
     (⊢ (F ... F_1 ... (: x A)) N B (F_2 ...))
     ----------------------
-    (⊢ (F ...) (let (= x M) N) B (F_1 ... F_2 ...))])
+    (⊢ (F ...) (let (= x M) N) B (F_1 ... F_2 ...))]
+
+  [ (⊢ (F ...) M B (F_0 ...))
+    (lookup (F ... F_0 ...) (≅ X A))
+    (~ B A)
+    ----------------------
+    (⊢ (F ...) (seal X M) X (F_0 ...))]
+
+
+  )
 
 (judgment-holds (⊢ ((: y Bool)) (let (= x y) x) A Γ) (A Γ))
+(judgment-holds (⊢ ((: y (× ? Bool)) (≅ Y (× Bool Bool))) (seal Y y) A Γ) (A Γ))
